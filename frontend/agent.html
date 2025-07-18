@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+  .agent-card h2 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .agent-card {
+    text-align: center;
+  }
+
+  .agent-back p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+</style>
+
+
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>GJP - Agent</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Raleway&family=Nunito&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+</head>
+
+<body class="blog-page">
+  <!-- Header -->
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center">
+      <a href="home.html" class="logo d-flex align-items-center me-auto">
+        <h1 class="sitename">Gujarat Journey Planner</h1>
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="home.html">Home</a></li>
+          <li><a href="places.html">Places</a></li>
+          <li class="dropdown active"><a href="#"><span>Services</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="hotel.html">Hotels</a></li>
+              <li><a href="transport.html">Transport</a></li>
+              <li><a href="agent.html">Local Agent</a></li>
+            </ul>
+          </li>
+          <li><a href="book.html">Book</a></li>
+          <li><a href="sign in.html">Sign In</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-title accent-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Local Agent</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="book.html">Book</a></li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div id="title" class="container section-title" data-aos="fade-up">
+      <h2>Agent</h2>
+    </div>
+  </main>
+
+  <!-- Dynamic Agent Section -->
+  <div class="agent-section">
+    <div id="agentContainer" class="agent-row">
+      <!-- Dynamic agent cards will load here -->
+    </div>
+  </div>
+
+  <!-- Agent Detail Overlay -->
+  <div id="agentOverlayContainer" style="display: none; position: fixed; top: 0; left: 0; 
+    width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); 
+    z-index: 9999; justify-content: center; align-items: center;">
+    <div style="position: relative; width: 90%; height: 90%; max-width: 1200px;">
+      <button onclick="closeAgentOverlay()" style="position: absolute; top: 10px; right: 10px; 
+        color: rgba(34, 139, 34, 0.85); border: none; padding: 8px 12px; cursor: pointer; z-index: 10000;">Back</button>
+      <iframe id="agentIframe" style="width: 100%; height: 100%; border: none; border-radius: 8px; background: #fff;"></iframe>
+    </div>
+  </div>
+
+  <!-- Footer (unchanged) -->
+  <footer id="footer" class="footer dark-background">
+    <!-- ... Your existing footer content ... -->
+  </footer>
+
+  <!-- Scroll Top & Preloader -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <!-- Agent Page Script -->
+  <script>
+    let currentPage = 1;
+    const limit = 8;
+    let loading = false;
+    let totalPages = 1;
+    const agentContainer = document.getElementById('agentContainer');
+
+    function createAgentCard(agent) {
+      const getDummyAvatar = (gender) => {
+        return gender && gender.toLowerCase() === 'female'
+          ? 'https://randomuser.me/api/portraits/women/32.jpg'
+          : 'https://randomuser.me/api/portraits/men/10.jpg';
+      };
+
+      const imageUrl = getDummyAvatar(agent.gender);
+      const generateStars = (rating) => {
+        const full = Math.floor(rating);
+        const half = rating % 1 !== 0;
+        return '⭐'.repeat(full) + (half ? '⭐' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
+      };
+
+      const location = agent.district || agent.location || agent.city || 'Gujarat';
+      const agentId = agent._id || `agent_${Date.now()}`;
+      const escapedName = (agent.name || '').replace(/'/g, "\\'");
+      const escapedId = agentId.toString().replace(/'/g, "\\'");
+
+      return `
+        <div class="agent-column">
+          <div class="agent-card">
+            <div class="agent-front">
+              <img src="${imageUrl}" alt="Agent ${agent.name || 'Unknown'}" onerror="this.src='https://randomuser.me/api/portraits/men/10.jpg'" />
+              <h2>${agent.name || 'Unknown Agent'}</h2>
+              <h3>${location}</h3>
+            </div>
+            <div class="agent-back">
+              <p><strong>Experience:</strong> ${agent.experience ? agent.experience + ' years' : 'Not specified'}</p>
+              <p><strong>Age:</strong> ${agent.age || 'Not specified'}</p>
+              <p><strong>Gender:</strong> ${agent.gender || 'Not specified'}</p>
+              <p><strong>Languages:</strong> ${agent.language || agent.languages || 'Not specified'}</p>
+              <p><strong>Fees:</strong> ${agent.fees || agent.hourlyRate || 'Contact for pricing'}</p>
+              <p><strong>Rating:</strong> ${generateStars(agent.rating || 4)}</p>
+              <p><strong>Speciality:</strong> ${agent.specialties || agent.speciality || agent.expertise || 'General Services'}</p>
+              <button class="book-btn-agent" onclick="window.location.href='book.html?agentId=${escapedId}&agentName=${encodeURIComponent(agent.name || '')}'">Book Now</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function loadAgents(reset = false) {
+      if (loading || (currentPage > totalPages && !reset)) return;
+      loading = true;
+
+      if (reset) {
+        agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Loading agents...</div>';
+        currentPage = 1;
+      }
+
+      try {
+        const query = new URLSearchParams({ page: currentPage, limit });
+        const res = await fetch(`http://localhost:5000/api/agents/search?${query.toString()}`);
+        const data = await res.json();
+
+        totalPages = data.totalPages || 1;
+
+        if (reset) {
+          agentContainer.innerHTML = '';
+        }
+
+        if (data.agents && data.agents.length > 0) {
+          data.agents.forEach(agent => {
+            agentContainer.insertAdjacentHTML('beforeend', createAgentCard(agent));
+          });
+          currentPage++;
+        } else if (reset) {
+          agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">No agents found.</div>';
+        }
+
+      } catch (err) {
+        console.error('Error loading agents:', err);
+        if (reset) {
+          agentContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Failed to load agents.</div>';
+        }
+      } finally {
+        loading = false;
+      }
+    }
+
+    // Throttled scroll
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+          loadAgents();
+        }
+      }, 200);
+    });
+
+    // Agent overlay handlers
+    function openAgentOverlay(agentId, agentName) {
+      document.getElementById("agentIframe").src = `agent-detail.html?id=${encodeURIComponent(agentId)}&name=${encodeURIComponent(agentName)}`;
+      document.getElementById("agentOverlayContainer").style.display = "flex";
+    }
+
+    function closeAgentOverlay() {
+      const overlay = document.getElementById("agentOverlayContainer");
+      overlay.style.display = "none";
+      document.getElementById("agentIframe").src = "";
+    }
+
+    // Initial load on page ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadAgents(true);
+      if (document.body.offsetHeight <= window.innerHeight) {
+        loadAgents(); // Load more if not enough content
+      }
+    });
+  </script>
+</body>
+</html>

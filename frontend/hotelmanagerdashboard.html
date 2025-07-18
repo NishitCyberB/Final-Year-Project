@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Dashboard | Royal Heritage</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f3f4f6;
+      color: #333;
+    }
+
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #1bbd36;
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar .nav-link {
+      padding: 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      margin: 8px 0;
+      background: rgba(255,255,255,0.1);
+      transition: all 0.3s;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: white;
+      color: #1bbd36;
+      font-weight: bold;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: #f9f9f9;
+    }
+
+    .dashboard-section {
+      display: none;
+    }
+
+    .dashboard-section.active {
+      display: block;
+    }
+
+    .overview-cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 200px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    form, .profile-view, .services-list {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #1bbd36;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #149c2c;
+    }
+
+    .booking-card {
+      background: white;
+      padding: 15px;
+      border-left: 5px solid #1bbd36;
+      margin-top: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.07);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .overview-cards {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const role = localStorage.getItem('userRole');
+    if (role !== 'hotel') {
+      alert("❌ Access Denied: Only Hotel Manager can view this page.");
+      window.location.href = "sign in.html";
+    }
+  </script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("⚠️ Please login first.");
+      window.location.href = "sign in.html";
+    }
+  </script>
+  
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>🏨 Hotel Admin</h2>
+      <nav>
+        <ul>
+          <li class="nav-link active" data-section="overview">Overview</li>
+          <li class="nav-link" data-section="profile">Hotel Profile</li>
+          <li class="nav-link" data-section="services">Services</li>
+          <li class="nav-link" data-section="bookings">Bookings</li>
+          <li class="nav-link" data-section="gallery">Gallery</li>
+          <li class="nav-link" data-section="rooms">Room Types</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hotel Overview -->
+      <section id="overview" class="dashboard-section active">
+        <h2>Dashboard Overview</h2>
+        <div class="overview-cards">
+          <div class="card"><h3>Total Rooms</h3><p>45</p></div>
+          <div class="card"><h3>Bookings Today</h3><p>8</p></div>
+          <div class="card"><h3>Active Services</h3><p>6</p></div>
+          <div class="card"><h3>Gallery Images</h3><p>12</p></div>
+        </div>
+      </section>
+
+      <!-- Hotel Profile -->
+<section id="profile" class="dashboard-section">
+  <h2>Hotel Profile</h2>
+  <div class="profile-view">
+    <p><strong>Hotel Name:</strong> <span id="displayHotelName">Royal Heritage</span></p>
+    <p><strong>Location:</strong> <span id="displayLocation">Ashram Road, Ahmedabad, Gujarat</span></p>
+    <p><strong>Contact:</strong> <span id="displayContact">+91 9876543210</span></p>
+    <p><strong>Email:</strong> <span id="displayEmail">royalheritage@gmail.com</span></p>
+    <p><strong>Check-in Time:</strong> <span id="displayCheckin">12:00 PM</span></p>
+    <p><strong>Check-out Time:</strong> <span id="displayCheckout">11:00 AM</span></p>
+    <p><strong>Star Rating:</strong> <span id="displayRating">⭐⭐⭐⭐</span></p>
+    <p><strong>Description:</strong> <span id="displayDescription">Royal Heritage is a luxury stay option in Ahmedabad offering comfort, modern amenities, and excellent service near the Sabarmati Riverfront.</span></p>
+    <button onclick="editHotelProfile()">Edit</button>
+  </div>
+
+  <form id="hotelProfileForm" class="hidden">
+    <input type="text" id="inputHotelName" placeholder="Hotel Name" />
+    <input type="text" id="inputLocation" placeholder="Location" />
+    <input type="text" id="inputContact" placeholder="Contact" />
+    <input type="email" id="inputEmail" placeholder="Email" />
+    <input type="time" id="inputCheckin" />
+    <input type="time" id="inputCheckout" />
+    <input type="text" id="inputRating" placeholder="Star Rating (e.g., ⭐⭐⭐⭐)" />
+    <textarea id="inputDescription" placeholder="Description"></textarea>
+    <button type="button" onclick="saveHotelProfile()">Save</button>
+  </form>
+</section>
+
+
+      <!-- Services -->
+      <section id="services" class="dashboard-section">
+        <h2>Hotel Services</h2>
+        <div class="services-list">
+          <ul>
+            <li>Free WiFi</li>
+            <li>Parking</li>
+            <li>24/7 Room Service</li>
+            <li>Breakfast Buffet</li>
+            <li>Swimming Pool</li>
+            <li>Airport Pickup</li>
+          </ul>
+          <button onclick="toggleEdit('services-form')">Edit Services</button>
+        </div>
+        <form id="services-form" class="hidden">
+          <label>Edit Services:
+            <select multiple>
+              <option selected>Free WiFi</option>
+              <option selected>Parking</option>
+              <option selected>24/7 Room Service</option>
+              <option>Gym</option>
+              <option>Breakfast</option>
+              <option>Bar</option>
+            </select>
+          </label>
+          <button type="submit">Save Services</button>
+        </form>
+      </section>
+
+      <!-- Bookings -->
+      <section id="bookings" class="dashboard-section">
+        <h2>Hotel Bookings</h2>
+        <div class="booking-card">
+          <p><strong>Guest:</strong> Aarya Patel</p>
+          <p><strong>Room:</strong> Deluxe</p>
+          <p><strong>Check-in:</strong> 22-Jun-2025</p>
+          <button>Manage</button>
+        </div>
+        <div class="booking-card">
+          <p><strong>Guest:</strong> Rahul Mehta</p>
+          <p><strong>Room:</strong> Standard</p>
+          <p><strong>Check-in:</strong> 23-Jun-2025</p>
+          <button>Manage</button>
+        </div>
+      </section>
+
+      <!-- Hotel Gallery Upload -->
+<section id="gallery" class="dashboard-section">
+  <h2>Hotel Gallery</h2>
+
+  <div class="gallery-grid" id="imagePreview">
+    <img src="images/hotel1.jpg" alt="Hotel Room" id="preview1" />
+    <img src="images/hotel2.jpg" alt="Lobby" id="preview2" />
+    <img src="images/hotel3.jpg" alt="Restaurant" id="preview3" />
+  </div>
+
+  <form id="galleryForm" style="margin-top: 20px;">
+    <label>Upload  Image 1: <input type="file" accept="image/*" onchange="previewImage(event, 'preview1')" /></label><br/><br/>
+    <label>Upload  Image 2: <input type="file" accept="image/*" onchange="previewImage(event, 'preview2')" /></label><br/><br/>
+    <label>Upload  Image 3: <input type="file" accept="image/*" onchange="previewImage(event, 'preview3')" /></label><br/><br/>
+    <button type="button" onclick="alert('Images updated for preview. (Upload logic can be added here to save them permanently.)')">Save Gallery</button>
+  </form>
+</section>
+
+
+      <!-- Room Types -->
+<section id="rooms" class="dashboard-section">
+  <h2>Room Types</h2>
+
+  <div class="overview-cards">
+    <div class="card" id="roomCard1">
+      <h3><span id="roomName1">Deluxe</span></h3>
+      <p><strong>Price:</strong> ₹<span id="roomPrice1">4500</span>/night</p>
+      <p><strong>Amenities:</strong> <span id="roomAmenities1">AC, TV, WiFi, Bath Tub</span></p>
+      <button onclick="editRoom(1)">Edit</button>
+    </div>
+
+    <div class="card" id="roomCard2">
+      <h3><span id="roomName2">Standard</span></h3>
+      <p><strong>Price:</strong> ₹<span id="roomPrice2">3000</span>/night</p>
+      <p><strong>Amenities:</strong> <span id="roomAmenities2">AC, TV, WiFi</span></p>
+      <button onclick="editRoom(2)">Edit</button>
+    </div>
+  </div>
+
+  <form id="roomForm" class="hidden" style="margin-top: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 500px;">
+    <h3>Edit Room Details</h3>
+    <input type="hidden" id="roomIndex" />
+    <label>Room Name:
+      <input type="text" id="inputRoomName" style="margin-bottom: 10px;" />
+    </label><br />
+    <label>Price (₹):
+      <input type="number" id="inputRoomPrice" style="margin-bottom: 10px;" />
+    </label><br />
+    <label>Amenities:
+      <input type="text" id="inputRoomAmenities" style="margin-bottom: 10px;" />
+    </label><br />
+    <button type="button" onclick="saveRoom()">Save</button>
+  </form>
+</section>
+
+
+    </main>
+  </div>
+
+  <script>
+    // Handle section toggle
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        const sectionId = link.getAttribute('data-section');
+        document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+      });
+    });
+
+    // Toggle editable forms
+    function toggleEdit(formId) {
+      const form = document.getElementById(formId);
+      form.classList.toggle('hidden');
+    }
+  </script>
+
+<script>
+  function editHotelProfile() {
+    document.getElementById("hotelProfileForm").classList.remove("hidden");
+
+    document.getElementById("inputHotelName").value = document.getElementById("displayHotelName").innerText;
+    document.getElementById("inputLocation").value = document.getElementById("displayLocation").innerText;
+    document.getElementById("inputContact").value = document.getElementById("displayContact").innerText;
+    document.getElementById("inputEmail").value = document.getElementById("displayEmail").innerText;
+    document.getElementById("inputCheckin").value = convertTo24Hour(document.getElementById("displayCheckin").innerText);
+    document.getElementById("inputCheckout").value = convertTo24Hour(document.getElementById("displayCheckout").innerText);
+    document.getElementById("inputRating").value = document.getElementById("displayRating").innerText;
+    document.getElementById("inputDescription").value = document.getElementById("displayDescription").innerText;
+  }
+
+  function saveHotelProfile() {
+    document.getElementById("displayHotelName").innerText = document.getElementById("inputHotelName").value;
+    document.getElementById("displayLocation").innerText = document.getElementById("inputLocation").value;
+    document.getElementById("displayContact").innerText = document.getElementById("inputContact").value;
+    document.getElementById("displayEmail").innerText = document.getElementById("inputEmail").value;
+    document.getElementById("displayCheckin").innerText = formatTime12(document.getElementById("inputCheckin").value);
+    document.getElementById("displayCheckout").innerText = formatTime12(document.getElementById("inputCheckout").value);
+    document.getElementById("displayRating").innerText = document.getElementById("inputRating").value;
+    document.getElementById("displayDescription").innerText = document.getElementById("inputDescription").value;
+
+    alert("Hotel profile updated successfully!");
+    document.getElementById("hotelProfileForm").classList.add("hidden");
+  }
+
+  function formatTime12(time24) {
+    const [hour, minute] = time24.split(":");
+    const h = parseInt(hour, 10);
+    const suffix = h >= 12 ? "PM" : "AM";
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${suffix}`;
+  }
+
+  function convertTo24Hour(time12) {
+    const [time, modifier] = time12.split(" ");
+    let [hours, minutes] = time.split(":");
+    if (modifier === "PM" && hours !== "12") hours = parseInt(hours) + 12;
+    if (modifier === "AM" && hours === "12") hours = "00";
+    return `${hours.padStart(2, "0")}:${minutes}`;
+  }
+</script>
+<script>
+  function previewImage(event, previewId) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function () {
+      const output = document.getElementById(previewId);
+      output.src = reader.result;
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+
+<script>
+  function editRoom(index) {
+    document.getElementById("roomForm").classList.remove("hidden");
+    document.getElementById("roomIndex").value = index;
+
+    document.getElementById("inputRoomName").value = document.getElementById(`roomName${index}`).innerText;
+    document.getElementById("inputRoomPrice").value = document.getElementById(`roomPrice${index}`).innerText;
+    document.getElementById("inputRoomAmenities").value = document.getElementById(`roomAmenities${index}`).innerText;
+  }
+
+  function saveRoom() {
+    const index = document.getElementById("roomIndex").value;
+    const name = document.getElementById("inputRoomName").value;
+    const price = document.getElementById("inputRoomPrice").value;
+    const amenities = document.getElementById("inputRoomAmenities").value;
+
+    document.getElementById(`roomName${index}`).innerText = name;
+    document.getElementById(`roomPrice${index}`).innerText = price;
+    document.getElementById(`roomAmenities${index}`).innerText = amenities;
+
+    alert("Room details updated successfully!");
+    document.getElementById("roomForm").classList.add("hidden");
+  }
+</script>
+
+
+</body>
+</html>

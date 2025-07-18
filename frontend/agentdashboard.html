@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agent Dashboard | Gujarat Journey Planner</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #1bbd36;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar .nav-link {
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+
+    .sidebar .nav-link.active,
+    .sidebar .nav-link:hover {
+      background-color: white;
+      color: #1bbd36;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .dashboard-section {
+      display: none;
+    }
+
+    .dashboard-section.active {
+      display: block;
+    }
+
+    /* Cards & Layout */
+    .overview-cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 200px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    /* Forms and Details */
+    form, .profile-view, .services-list, .tour-package, .booking-card, .review-card {
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #1bbd36;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #169a2c;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Gallery */
+    .gallery-grid {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .gallery-grid img {
+      width: 150px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+      }
+      .overview-cards {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const role = localStorage.getItem('userRole');
+    if (role !== 'guide') {
+      alert("❌ Access Denied: Only Agent can view this page.");
+      window.location.href = "sign in.html";
+    }
+  </script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("⚠️ Please login first.");
+      window.location.href = "sign in.html";
+    }
+  </script>
+  
+
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>🧭 Agent Panel</h2>
+      <nav>
+        <ul>
+          <li class="nav-link active" data-section="overview">Overview</li>
+          <li class="nav-link" data-section="profile">Agent Profile</li>
+          <li class="nav-link" data-section="tours">Tour Packages</li>
+          <li class="nav-link" data-section="bookings">Tour Bookings</li>
+          <li class="nav-link" data-section="gallery">Gallery</li>
+          <li class="nav-link" data-section="reviews">Reviews</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Overview -->
+      <section id="overview" class="dashboard-section active">
+        <h2>Dashboard Overview</h2>
+        <div class="overview-cards">
+          <div class="card">
+            <h3>Total Packages</h3>
+            <p>12</p>
+          </div>
+          <div class="card">
+            <h3>Today's Bookings</h3>
+            <p>5</p>
+          </div>
+          <div class="card">
+            <h3>Total Reviews</h3>
+            <p>48</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Agent Profile -->
+      <!-- Agent Profile -->
+<section id="profile" class="dashboard-section">
+  <h2>Agent Profile</h2>
+  <div class="profile-view">
+    <p><strong>Name:</strong> <span id="displayName">Gujarat Explorer</span></p>
+    <p><strong>Location:</strong> <span id="displayLocation">Rajkot, Gujarat</span></p>
+    <p><strong>Contact:</strong> <span id="displayContact">+91 9123456789</span></p>
+    <p><strong>Email:</strong> <span id="displayEmail">gujaratexplorer@email.com</span></p>
+    <button onclick="editProfile()">Edit</button>
+  </div>
+
+  <form id="profileForm" class="hidden">
+    <input type="text" id="inputName" placeholder="Name" />
+    <input type="text" id="inputLocation" placeholder="Location" />
+    <input type="text" id="inputContact" placeholder="Contact" />
+    <input type="email" id="inputEmail" placeholder="Email" />
+    <button type="button" onclick="saveProfile()">Save</button>
+  </form>
+</section>
+
+
+      <!-- Tour Packages -->
+      <!-- Tour Packages -->
+<section id="tours" class="dashboard-section">
+  <h2>Tour Packages</h2>
+
+  <div class="tour-package" id="tour1">
+    <p><strong>Tour Name:</strong> <span id="tourName1">Kutch Desert Experience</span></p>
+    <p><strong>Duration:</strong> <span id="tourDuration1">3 Days</span></p>
+    <p><strong>Price:</strong> ₹<span id="tourPrice1">6500</span></p>
+    <p><strong>Includes:</strong> <span id="tourIncludes1">Accommodation, Travel, Guide</span></p>
+    <button onclick="editTour(1)">Edit</button>
+  </div>
+
+  <div class="tour-package" id="tour2">
+    <p><strong>Tour Name:</strong> <span id="tourName2">Gir Forest Wildlife Tour</span></p>
+    <p><strong>Duration:</strong> <span id="tourDuration2">2 Days</span></p>
+    <p><strong>Price:</strong> ₹<span id="tourPrice2">4800</span></p>
+    <p><strong>Includes:</strong> <span id="tourIncludes2">Jeep Safari, Meals, Transport</span></p>
+    <button onclick="editTour(2)">Edit</button>
+  </div>
+
+  <form id="tourForm" class="hidden">
+    <h3>Edit Tour Package</h3>
+    <input type="text" id="inputTourName" placeholder="Tour Name" />
+    <input type="text" id="inputTourDuration" placeholder="Duration" />
+    <input type="number" id="inputTourPrice" placeholder="Price" />
+    <input type="text" id="inputTourIncludes" placeholder="Includes" />
+    <input type="hidden" id="tourIndex" />
+    <button type="button" onclick="saveTour()">Save Tour</button>
+  </form>
+</section>
+
+
+      <!-- Bookings -->
+      <section id="bookings" class="dashboard-section">
+        <h2>Tour Bookings</h2>
+        <div class="booking-card">
+          <p><strong>Client:</strong> Dhruv Shah</p>
+          <p><strong>Tour:</strong> Kutch Desert Experience</p>
+          <p><strong>Date:</strong> 25-Jun-2025</p>
+          <button>Manage</button>
+        </div>
+        <div class="booking-card">
+          <p><strong>Client:</strong> Krina Joshi</p>
+          <p><strong>Tour:</strong> Gir Forest Wildlife Tour</p>
+          <p><strong>Date:</strong> 26-Jun-2025</p>
+          <button>Manage</button>
+        </div>
+      </section>
+
+      <!-- Gallery -->
+      <section id="gallery" class="dashboard-section">
+        <h2>Tour Gallery</h2>
+        <div class="gallery-grid">
+          <img src="images/tour1.jpg" alt="Tour Image 1" />
+          <img src="images/tour2.jpg" alt="Tour Image 2" />
+          <img src="images/tour3.jpg" alt="Tour Image 3" />
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section id="reviews" class="dashboard-section">
+        <h2>Client Reviews</h2>
+        <div class="review-card">
+          <p><strong>Client:</strong> Hetal Desai</p>
+          <p>"Amazing service! The trip was smooth and memorable."</p>
+        </div>
+        <div class="review-card">
+          <p><strong>Client:</strong> Aman Trivedi</p>
+          <p>"Highly professional team, will book again soon!"</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Switch active dashboard sections
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.remove('active'));
+
+        link.classList.add('active');
+        document.getElementById(link.dataset.section).classList.add('active');
+      });
+    });
+
+    // Toggle edit form visibility
+    function toggleEdit(formId) {
+      document.getElementById(formId).classList.toggle('hidden');
+    }
+  </script>
+  <script>
+    function editProfile() {
+      document.getElementById("profileForm").classList.remove("hidden");
+      document.getElementById("inputName").value = document.getElementById("displayName").innerText;
+      document.getElementById("inputLocation").value = document.getElementById("displayLocation").innerText;
+      document.getElementById("inputContact").value = document.getElementById("displayContact").innerText;
+      document.getElementById("inputEmail").value = document.getElementById("displayEmail").innerText;
+    }
+  
+    function saveProfile() {
+      const name = document.getElementById("inputName").value;
+      const location = document.getElementById("inputLocation").value;
+      const contact = document.getElementById("inputContact").value;
+      const email = document.getElementById("inputEmail").value;
+  
+      document.getElementById("displayName").innerText = name;
+      document.getElementById("displayLocation").innerText = location;
+      document.getElementById("displayContact").innerText = contact;
+      document.getElementById("displayEmail").innerText = email;
+  
+      alert("Profile updated successfully!");
+      document.getElementById("profileForm").classList.add("hidden");
+    }
+  </script>
+  
+  <script>
+    function editTour(index) {
+      document.getElementById("tourForm").classList.remove("hidden");
+      document.getElementById("tourIndex").value = index;
+  
+      document.getElementById("inputTourName").value = document.getElementById(`tourName${index}`).innerText;
+      document.getElementById("inputTourDuration").value = document.getElementById(`tourDuration${index}`).innerText;
+      document.getElementById("inputTourPrice").value = document.getElementById(`tourPrice${index}`).innerText;
+      document.getElementById("inputTourIncludes").value = document.getElementById(`tourIncludes${index}`).innerText;
+    }
+  
+    function saveTour() {
+      const index = document.getElementById("tourIndex").value;
+      const name = document.getElementById("inputTourName").value;
+      const duration = document.getElementById("inputTourDuration").value;
+      const price = document.getElementById("inputTourPrice").value;
+      const includes = document.getElementById("inputTourIncludes").value;
+  
+      document.getElementById(`tourName${index}`).innerText = name;
+      document.getElementById(`tourDuration${index}`).innerText = duration;
+      document.getElementById(`tourPrice${index}`).innerText = price;
+      document.getElementById(`tourIncludes${index}`).innerText = includes;
+  
+      alert("Tour package updated successfully!");
+      document.getElementById("tourForm").classList.add("hidden");
+    }
+  </script>
+  
+
+</body>
+</html>

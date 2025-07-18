@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title id="pageTitle"></title>
+  <link href="assets/css/main.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Nearby place card template -->
+<template id="nearby-card-template">
+  <div class="nearby-card" tabindex="0">
+    <img src="" alt="" class="nearby-image" />
+    <div class="nearby-card-content">
+      <h3 class="nearby-title"></h3>
+      <p class="nearby-description"></p>
+    </div>
+  </div>
+</template>
+
+<div class="single-place-container themed-background">
+  <h1 class="place-title themed-title" id="placeTitle"></h1>
+
+  <div class="place-content">
+    <!-- Left: main image and thumbnails -->
+    <div class="image-section">
+      <div class="main-image-box">
+        <img src="" alt="" class="main-image" id="mainImage" />
+      </div>
+
+      <div class="thumbnail-nav-container">
+        <button class="nav-button" id="prevBtn" aria-label="Previous Image">←</button>
+        <div class="thumbnail-row" id="thumbnailRow"></div>
+        <button class="nav-button" id="nextBtn" aria-label="Next Image">→</button>
+      </div>
+
+      <section class="nearby-section" aria-label="Nearby Tourist Places">
+        <h2 class="nearby-title">Nearby Tourist Places</h2>
+        <div class="nearby-slider" id="nearbySlider"></div>
+      </section>
+    </div>
+
+    <!-- Right: details -->
+    <div class="details-section">
+      <h2 class="details-title">Overview</h2>
+      <p><strong>District:</strong> <span id="district"></span></p>
+      <p><strong>Pincode:</strong> <span id="pincode"></span></p>
+      <p><strong>Category:</strong> <span id="category"></span></p>
+      <p><strong>Visitor Type:</strong> <span id="visitorType"></span></p>
+      <p><strong>Best Season to Visit:</strong> <span id="bestSeason"></span></p>
+      <p><strong>Budget / Price Range:</strong> <span id="budgetRange"></span></p>
+      <p><strong>Tourist Rating:</strong> <span id="touristRating"></span></p>
+      <p><strong>Famous For:</strong> <span id="famousFor"></span></p>
+
+      <h2 class="details-title">Introduction</h2>
+      <p id="introduction"></p>
+
+      <h2 class="details-title">Details</h2>
+      <p id="details"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Replace populateNearbyPlaces to use template
+function populateNearbyPlaces(places) {
+  const nearbySlider = document.getElementById('nearbySlider');
+  nearbySlider.innerHTML = '';
+
+  if (!places.length) return;
+
+  const template = document.getElementById('nearby-card-template');
+
+  places.forEach(place => {
+    const clone = template.content.cloneNode(true);
+
+    const img = clone.querySelector('.nearby-image');
+    img.src = place.imageUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+    img.alt = place.name;
+    img.onerror = function () {
+      this.src = 'https://via.placeholder.com/200x150?text=Image+Error';
+    };
+
+    clone.querySelector('.nearby-title').textContent = place.name;
+    clone.querySelector('.nearby-description').textContent = place.intro || place.introduction || place.famousFor || place.famous || '';
+
+    nearbySlider.appendChild(clone);
+  });
+}
+</script>
+
+<script>
+  // Global variables
+  let currentPlaceData = null;
+  let currentImages = [];
+  let currentIndex = 0;
+  let nearbyPlaces = [];
+
+  // Get place name from URL parameters
+  function getPlaceFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('place');
+  }
+
+  // Fetch place data from API
+  async function fetchPlaceData(placeName) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/places/single/${encodeURIComponent(placeName)}`);
+      if (!response.ok) {
+        return null;
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Fetch nearby places from same district
+  async function fetchNearbyPlaces(district, excludePlaceName) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/places/nearby?district=${encodeURIComponent(district)}&exclude=${encodeURIComponent(excludePlaceName)}`);
+      if (!response.ok) {
+        return [];
+      }
+      const data = await response.json();
+      return data.places || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  // Populate place details
+  function populateDetails(placeData) {
+    document.getElementById('pageTitle').textContent = placeData.name ? `${placeData.name} - Explore` : '';
+    document.getElementById('placeTitle').textContent = placeData.name || '';
+    
+    // Handle nested location data and different field formats
+    document.getElementById('district').textContent = placeData.district || (placeData.location && placeData.location.district) || '';
+    document.getElementById('pincode').textContent = placeData.pincode || (placeData.location && placeData.location.pincode) || '';
+    document.getElementById('category').textContent = placeData.category || '';
+    document.getElementById('visitorType').textContent = placeData.visitorType || placeData['visitor type'] || '';
+    document.getElementById('bestSeason').textContent = placeData.bestSeason || placeData['best season'] || '';
+    document.getElementById('budgetRange').textContent = placeData.budgetRange || placeData.price || '';
+    document.getElementById('touristRating').textContent = placeData.touristRating || placeData.rating || '';
+    document.getElementById('famousFor').textContent = placeData.famousFor || placeData.famous || '';
+    document.getElementById('introduction').textContent = placeData.introduction || placeData.intro || '';
+    document.getElementById('details').textContent = placeData.details || '';
+  }
+
+  // Populate image gallery
+  function populateImages(placeData) {
+    currentImages = [];
+    
+    // Add main image first
+    if (placeData.imageUrl) {
+      currentImages.push(placeData.imageUrl);
+    }
+    
+    // Add additional images if available
+    if (placeData.images && Array.isArray(placeData.images)) {
+      currentImages = currentImages.concat(placeData.images);
+    }
+    
+    // If no images, use placeholder
+    if (currentImages.length === 0) {
+      currentImages.push('https://via.placeholder.com/600x400?text=No+Image+Available');
+    }
+
+    // Set main image with error handling
+    const mainImage = document.getElementById('mainImage');
+    mainImage.src = currentImages[0];
+    mainImage.alt = placeData.name;
+    mainImage.onerror = function() {
+      this.src = 'https://via.placeholder.com/600x400?text=Image+Error';
+    };
+
+    // Populate thumbnails
+    const thumbnailRow = document.getElementById('thumbnailRow');
+    thumbnailRow.innerHTML = '';
+    
+    currentImages.forEach((imageUrl, index) => {
+      const thumbnail = document.createElement('div');
+      thumbnail.className = `thumbnail ${index === 0 ? 'active' : ''}`;
+      thumbnail.setAttribute('data-index', index);
+      
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = `${placeData.name} - Image ${index + 1}`;
+      img.onerror = function() {
+        this.src = 'https://via.placeholder.com/150x100?text=Image+Error';
+      };
+      
+      thumbnail.appendChild(img);
+      thumbnailRow.appendChild(thumbnail);
+      
+      // Add click event
+      thumbnail.addEventListener('click', () => {
+        currentIndex = index;
+        updateMainImage(currentIndex);
+      });
+    });
+  }
+
+  // Populate nearby places
+  function populateNearbyPlaces(places) {
+    const nearbySlider = document.getElementById('nearbySlider');
+    nearbySlider.innerHTML = '';
+    
+    if (places.length === 0) {
+      return;
+    }
+    
+    places.forEach(place => {
+      const card = document.createElement('div');
+      card.className = 'nearby-card';
+      card.setAttribute('tabindex', '0');
+      
+      const img = document.createElement('img');
+      img.src = place.imageUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+      img.alt = place.name;
+      img.onerror = function() {
+        this.src = 'https://via.placeholder.com/200x150?text=Image+Error';
+      };
+      
+      const content = document.createElement('div');
+      content.className = 'nearby-card-content';
+      
+      const title = document.createElement('h3');
+      title.textContent = place.name;
+      
+      const description = document.createElement('p');
+      description.textContent = place.intro || place.introduction || place.famousFor || place.famous || '';
+      
+      content.appendChild(title);
+      content.appendChild(description);
+      card.appendChild(img);
+      card.appendChild(content);
+      nearbySlider.appendChild(card);
+    });
+  }
+
+  // Update main image
+  function updateMainImage(index) {
+    const mainImage = document.getElementById('mainImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    
+    mainImage.src = currentImages[index];
+    mainImage.onerror = function() {
+      this.src = 'https://via.placeholder.com/600x400?text=Image+Error';
+    };
+    
+    thumbnails.forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+    });
+  }
+
+  // Initialize image navigation
+  function initializeImageNavigation() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      updateMainImage(currentIndex);
+      const thumbnails = document.querySelectorAll('.thumbnail');
+      if (thumbnails[currentIndex]) {
+        thumbnails[currentIndex].scrollIntoView({behavior: 'smooth', inline: 'center'});
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      updateMainImage(currentIndex);
+      const thumbnails = document.querySelectorAll('.thumbnail');
+      if (thumbnails[currentIndex]) {
+        thumbnails[currentIndex].scrollIntoView({behavior: 'smooth', inline: 'center'});
+      }
+    });
+  }
+
+  // Initialize nearby places auto-slide
+  function initializeNearbySlider() {
+    const nearbySlider = document.getElementById('nearbySlider');
+    let nearbyScrollPos = 0;
+    const cardWidth = 220 + 16; // card width + gap approx
+    
+    function slideNearby() {
+      const totalCards = nearbySlider.children.length;
+      if (totalCards === 0) return;
+      
+      nearbyScrollPos += cardWidth;
+      if (nearbyScrollPos > (cardWidth * (totalCards - 1))) {
+        nearbyScrollPos = 0;
+      }
+      nearbySlider.scrollTo({ left: nearbyScrollPos, behavior: 'smooth' });
+    }
+
+    let nearbyInterval = setInterval(slideNearby, 3500);
+
+    // Pause auto-slide on hover or focus
+    nearbySlider.addEventListener('mouseenter', () => clearInterval(nearbyInterval));
+    nearbySlider.addEventListener('mouseleave', () => nearbyInterval = setInterval(slideNearby, 3500));
+    nearbySlider.addEventListener('focusin', () => clearInterval(nearbyInterval));
+    nearbySlider.addEventListener('focusout', () => nearbyInterval = setInterval(slideNearby, 3500));
+  }
+
+  // Show error message
+  function showError(message) {
+    // Keep structure but show empty content
+    document.getElementById('pageTitle').textContent = '';
+    document.getElementById('placeTitle').textContent = '';
+  }
+
+  // Main initialization function
+  async function initializePage() {
+    const placeName = getPlaceFromURL();
+    
+    if (!placeName) {
+      return;
+    }
+
+    try {
+      // Fetch place data
+      const placeData = await fetchPlaceData(placeName);
+      
+      if (!placeData) {
+        return;
+      }
+
+      currentPlaceData = placeData;
+      
+      // Populate all sections
+      populateDetails(placeData);
+      populateImages(placeData);
+      
+      // Fetch and populate nearby places
+      const district = placeData.district || (placeData.location && placeData.location.district);
+      if (district) {
+        const nearby = await fetchNearbyPlaces(district, placeData.name);
+        populateNearbyPlaces(nearby);
+      }
+      
+      // Initialize interactive features
+      initializeImageNavigation();
+      initializeNearbySlider();
+      
+    } catch (error) {
+      // Silent fail - just keep empty structure
+    }
+  }
+
+  // Start the page initialization when DOM is loaded
+  document.addEventListener('DOMContentLoaded', initializePage);
+</script>
+
+
+</body>
+</html>
+
+
+
+</body>
+</html>

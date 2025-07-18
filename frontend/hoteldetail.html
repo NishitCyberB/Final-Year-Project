@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Hotel Details</title>
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+
+<div class="single-place-container themed-background">
+  <button class="back-button" onclick="window.history.back()" aria-label="Go back">
+    &#8592; Back
+  </button>
+  <h1 class="place-title themed-title" id="hotelName"></h1>
+
+  <div class="place-content">
+    <!-- Left: Image Section -->
+    <div class="image-section">
+      <div class="main-image-box">
+        <img src="" alt="" class="main-image" id="mainImage" />
+      </div>
+
+      <div class="thumbnail-nav-container">
+        <button class="nav-button" id="prevBtn" aria-label="Previous Image">&#8592;</button>
+        <div class="thumbnail-row" id="thumbnailRow"></div>
+        <button class="nav-button" id="nextBtn" aria-label="Next Image">&#8594;</button>
+      </div>
+
+      <!-- Nearby Hotels Section -->
+      <section class="nearby-section">
+        <h2 class="nearby-title">Nearby Hotels</h2>
+        <div class="nearby-slider" id="nearbySlider"></div>
+      </section>
+    </div>
+
+    <!-- Right: Details Section -->
+    <div class="details-section">
+      <h2 class="details-title">Overview</h2>
+      <p><strong>Location:</strong> <span id="district"></span></p>
+      <p><strong>Price Range:</strong> <span id="priceRange"></span></p>
+      <p><strong>Rating:</strong> <span id="rating"></span></p>
+
+      <h2 class="details-title">Description</h2>
+      <p id="description"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentImages = [];
+  let currentIndex = 0;
+
+  function getHotelIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+  }
+
+  async function fetchHotelById(id) {
+    try {
+      const res = await fetch(`http://localhost:5000/api/hotels/${id}`);
+      if (!res.ok) throw new Error('Hotel not found');
+      return await res.json();
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function fetchNearbyHotels(district, excludeId) {
+    try {
+      const res = await fetch(`http://localhost:5000/api/hotels/nearby?district=${encodeURIComponent(district)}&exclude=${encodeURIComponent(excludeId)}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.hotels || [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function populateHotelDetails(hotel) {
+    document.getElementById('pageTitle').textContent = hotel.name;
+    document.getElementById('hotelName').textContent = hotel.name || '';
+    document.getElementById('district').textContent = hotel.location?.district || '';
+    document.getElementById('priceRange').textContent = hotel.price || '';
+    document.getElementById('rating').textContent = hotel.rating ? `${hotel.rating} ★` : '';
+    document.getElementById('description').textContent = hotel.description || '';
+  }
+
+  function populateImages(hotel) {
+    currentImages = [];
+
+    if (hotel.imageUrl) currentImages.push(hotel.imageUrl);
+    if (Array.isArray(hotel.images)) currentImages.push(...hotel.images);
+
+    if (currentImages.length === 0) {
+      currentImages.push('https://via.placeholder.com/600x400?text=No+Image');
+    }
+
+    const mainImage = document.getElementById('mainImage');
+    mainImage.src = currentImages[0];
+    mainImage.onerror = function () {
+      this.src = 'https://via.placeholder.com/600x400?text=Image+Error';
+    };
+
+    const thumbnailRow = document.getElementById('thumbnailRow');
+    thumbnailRow.innerHTML = '';
+
+    currentImages.forEach((url, index) => {
+      const thumb = document.createElement('div');
+      thumb.className = `thumbnail ${index === 0 ? 'active' : ''}`;
+      thumb.setAttribute('data-index', index);
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = `Hotel image ${index + 1}`;
+      img.onerror = () => { img.src = 'https://via.placeholder.com/150x100?text=Error'; };
+
+      thumb.appendChild(img);
+      thumbnailRow.appendChild(thumb);
+
+      thumb.addEventListener('click', () => {
+        currentIndex = index;
+        updateMainImage(currentIndex);
+      });
+    });
+  }
+
+  function updateMainImage(index) {
+    const mainImage = document.getElementById('mainImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+
+    mainImage.src = currentImages[index];
+    mainImage.onerror = () => {
+      mainImage.src = 'https://via.placeholder.com/600x400?text=Image+Error';
+    };
+
+    thumbnails.forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+    });
+  }
+
+  function initImageNavigation() {
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      updateMainImage(currentIndex);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      updateMainImage(currentIndex);
+    });
+  }
+
+  function populateNearbyHotels(hotels) {
+    const nearbySlider = document.getElementById('nearbySlider');
+    nearbySlider.innerHTML = '';
+
+    hotels.forEach(hotel => {
+      const card = document.createElement('a');
+      card.className = 'nearby-card';
+      card.href = `hotel-detail.html?id=${hotel._id}`;
+      card.setAttribute('tabindex', '0');
+
+      const img = document.createElement('img');
+      img.src = hotel.imageUrl || 'https://via.placeholder.com/200x150?text=No+Image';
+      img.alt = hotel.name;
+      img.onerror = () => { img.src = 'https://via.placeholder.com/200x150?text=Image+Error'; };
+
+      const content = document.createElement('div');
+      content.className = 'nearby-card-content';
+
+      const title = document.createElement('h3');
+      title.textContent = hotel.name;
+
+      const description = document.createElement('p');
+      description.textContent = hotel.description?.slice(0, 80) || '';
+
+      content.appendChild(title);
+      content.appendChild(description);
+      card.appendChild(img);
+      card.appendChild(content);
+      nearbySlider.appendChild(card);
+    });
+  }
+
+  function initNearbyAutoScroll() {
+    const slider = document.getElementById('nearbySlider');
+    let scrollPos = 0;
+    const cardWidth = 220 + 16; // card width + gap
+
+    function scrollNext() {
+      const totalCards = slider.children.length;
+      if (!totalCards) return;
+
+      scrollPos += cardWidth;
+      if (scrollPos >= cardWidth * totalCards) scrollPos = 0;
+
+      slider.scrollTo({ left: scrollPos, behavior: 'smooth' });
+    }
+
+    let interval = setInterval(scrollNext, 3500);
+
+    slider.addEventListener('mouseenter', () => clearInterval(interval));
+    slider.addEventListener('mouseleave', () => interval = setInterval(scrollNext, 3500));
+    slider.addEventListener('focusin', () => clearInterval(interval));
+    slider.addEventListener('focusout', () => interval = setInterval(scrollNext, 3500));
+  }
+
+  async function initPage() {
+    const hotelId = getHotelIdFromURL();
+    if (!hotelId) return;
+
+    const hotel = await fetchHotelById(hotelId);
+    if (!hotel) return;
+
+    populateHotelDetails(hotel);
+    populateImages(hotel);
+    initImageNavigation();
+
+    if (hotel.location?.district) {
+      const nearby = await fetchNearbyHotels(hotel.location.district, hotelId);
+      populateNearbyHotels(nearby);
+      initNearbyAutoScroll();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initPage);
+</script>
+
+</body>
+</html>
