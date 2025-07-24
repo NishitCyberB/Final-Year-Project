@@ -71,18 +71,31 @@
     <div id="agentContainer" class="agent-row">
       <!-- Dynamic agent cards will load here -->
     </div>
+
+    <!-- Agent Card HTML Template -->
+    <template id="agentCardTemplate">
+      <div class="agent-column">
+        <div class="agent-card">
+          <div class="agent-front">
+            <img class="agent-image" src="" alt="Agent" />
+            <h2 class="agent-name"></h2>
+            <h3 class="agent-location"></h3>
+          </div>
+          <div class="agent-back">
+            <p><strong>Experience:</strong> <span class="agent-experience"></span></p>
+            <p><strong>Age:</strong> <span class="agent-age"></span></p>
+            <p><strong>Gender:</strong> <span class="agent-gender"></span></p>
+            <p><strong>Languages:</strong> <span class="agent-languages"></span></p>
+            <p><strong>Fees:</strong> <span class="agent-fees"></span></p>
+            <p><strong>Rating:</strong> <span class="agent-rating"></span></p>
+            <p><strong>Speciality:</strong> <span class="agent-speciality"></span></p>
+            <button class="book-btn-agent">Book Now</button>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 
-  <!-- Agent Detail Overlay -->
-  <div id="agentOverlayContainer" style="display: none; position: fixed; top: 0; left: 0; 
-    width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); 
-    z-index: 9999; justify-content: center; align-items: center;">
-    <div style="position: relative; width: 90%; height: 90%; max-width: 1200px;">
-      <button onclick="closeAgentOverlay()" style="position: absolute; top: 10px; right: 10px; 
-        color: rgba(34, 139, 34, 0.85); border: none; padding: 8px 12px; cursor: pointer; z-index: 10000;">Back</button>
-      <iframe id="agentIframe" style="width: 100%; height: 100%; border: none; border-radius: 8px; background: #fff;"></iframe>
-    </div>
-  </div>
 
   <!-- Footer -->
   <footer id="footer" class="footer dark-background">
@@ -104,124 +117,116 @@
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- Agent Script -->
+  <!-- Dynamic Agent Script -->
   <script>
-    let currentPage = 1;
-const limit = 8;
-let loading = false;
-let totalPages = 1;
-const agentContainer = document.getElementById('agentContainer');
+  //   let currentPage = 1;
+  //   const limit = 8;
+  //   let loading = false;
+  //   let totalPages = 1;
+  //   const agentContainer = document.getElementById('agentContainer');
 
-function createAgentCard(agent) {
-  const getDummyAvatar = (gender) => {
-    return gender && gender.toLowerCase() === 'female'
-      ? 'https://randomuser.me/api/portraits/women/32.jpg'
-      : 'https://randomuser.me/api/portraits/men/10.jpg';
-  };
+  //   function createAgentCard(agent) {
+  //     const template = document.getElementById('agentCardTemplate');
+  //     const clone = template.content.cloneNode(true);
 
-  const imageUrl = getDummyAvatar(agent.gender);
-  const generateStars = (rating) => {
-    const full = Math.floor(rating);
-    const half = rating % 1 !== 0;
-    return '⭐'.repeat(full) + (half ? '⭐' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
-  };
+  //     const getDummyAvatar = (gender) => {
+  //       return gender && gender.toLowerCase() === 'female'
+  //         ? 'https://randomuser.me/api/portraits/women/32.jpg'
+  //         : 'https://randomuser.me/api/portraits/men/10.jpg';
+  //     };
 
-  const location = agent.district || agent.location || agent.city || 'Gujarat';
-  const agentId = agent._id || `agent_${Date.now()}`;
-  const escapedName = (agent.name || '').replace(/'/g, "\\'");
-  const escapedId = agentId.toString().replace(/'/g, "\\'");
+  //     const imageUrl = getDummyAvatar(agent.gender);
+  //     const location = agent.district || agent.location || agent.city || 'Gujarat';
+  //     const rating = agent.rating || 4;
+  //     const full = Math.floor(rating);
+  //     const half = rating % 1 !== 0;
+  //     const stars = '⭐'.repeat(full) + (half ? '⭐' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
 
-  return `
-    <div class="agent-column">
-      <div class="agent-card">
-        <div class="agent-front">
-          <img src="${imageUrl}" alt="Agent ${agent.name || 'Unknown'}" onerror="this.src='https://randomuser.me/api/portraits/men/10.jpg'" />
-          <h2>${agent.name || 'Unknown Agent'}</h2>
-          <h3>${location}</h3>
-        </div>
-        <div class="agent-back">
-          <p><strong>Experience:</strong> ${agent.experience ? agent.experience + ' years' : 'Not specified'}</p>
-          <p><strong>Age:</strong> ${agent.age || 'Not specified'}</p>
-          <p><strong>Gender:</strong> ${agent.gender || 'Not specified'}</p>
-          <p><strong>Languages:</strong> ${agent.language || agent.languages || 'Not specified'}</p>
-          <p><strong>Fees:</strong> ${agent.fees || agent.hourlyRate || 'Contact for pricing'}</p>
-          <p><strong>Rating:</strong> ${generateStars(agent.rating || 4)}</p>
-          <p><strong>Speciality:</strong> ${agent.specialties || agent.speciality || agent.expertise || 'General Services'}</p>
-          <button class="book-btn-agent" onclick="window.location.href='book.html?agentId=${escapedId}&agentName=${encodeURIComponent(agent.name || '')}'">Book Now</button>
-        </div>
-      </div>
-    </div>`;
-}
+  //     const escapedId = agent._id || `agent_${Date.now()}`;
+  //     const agentName = agent.name || 'Unknown Agent';
 
-async function loadAgents(reset = false) {
-  if (loading || (currentPage > totalPages && !reset)) return;
-  loading = true;
+  //     clone.querySelector('.agent-image').src = imageUrl;
+  //     clone.querySelector('.agent-image').alt = `Agent ${agentName}`;
+  //     clone.querySelector('.agent-name').textContent = agentName;
+  //     clone.querySelector('.agent-location').textContent = location;
+  //     clone.querySelector('.agent-experience').textContent = agent.experience ? `${agent.experience} years` : 'Not specified';
+  //     clone.querySelector('.agent-age').textContent = agent.age || 'Not specified';
+  //     clone.querySelector('.agent-gender').textContent = agent.gender || 'Not specified';
+  //     clone.querySelector('.agent-languages').textContent = agent.language || agent.languages || 'Not specified';
+  //     clone.querySelector('.agent-fees').textContent = agent.fees || agent.hourlyRate || 'Contact for pricing';
+  //     clone.querySelector('.agent-rating').textContent = stars;
+  //     clone.querySelector('.agent-speciality').textContent = agent.specialties || agent.speciality || agent.expertise || 'General Services';
 
-  if (reset) {
-    agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Loading agents...</div>';
-    currentPage = 1;
-  }
+  //     clone.querySelector('.book-btn-agent').addEventListener('click', () => {
+  //       window.location.href = `book.html?agentId=${encodeURIComponent(escapedId)}&agentName=${encodeURIComponent(agentName)}`;
+  //     });
 
-  try {
-    const query = new URLSearchParams({ page: currentPage, limit });
-    const res = await fetch(`http://localhost:5000/api/agents/search?${query.toString()}`);
-    const data = await res.json();
+  //     return clone;
+  //   }
 
-    totalPages = data.totalPages || 1;
+  //   async function loadAgents(reset = false) {
+  //     if (loading || (currentPage > totalPages && !reset)) return;
+  //     loading = true;
 
-    if (reset) {
-      agentContainer.innerHTML = '';
-    }
+  //     if (reset) {
+  //       agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Loading agents...</div>';
+  //       currentPage = 1;
+  //     }
 
-    if (data.agents && data.agents.length > 0) {
-      data.agents.forEach(agent => {
-        agentContainer.insertAdjacentHTML('beforeend', createAgentCard(agent));
-      });
-      currentPage++;
-    } else if (reset) {
-      agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">No agents found.</div>';
-    }
+  //     try {
+  //       const query = new URLSearchParams({ page: currentPage, limit });
+  //       const res = await fetch(`http://localhost:5000/api/agents/search?${query.toString()}`);
+  //       const data = await res.json();
 
-  } catch (err) {
-    console.error('Error loading agents:', err);
-    if (reset) {
-      agentContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Failed to load agents.</div>';
-    }
-  } finally {
-    loading = false;
-  }
-}
+  //       totalPages = data.totalPages || 1;
 
-function openAgentOverlay(agentId, agentName) {
-  document.getElementById("agentIframe").src = `agent-detail.html?id=${encodeURIComponent(agentId)}&name=${encodeURIComponent(agentName)}`;
-  document.getElementById("agentOverlayContainer").style.display = "flex";
-}
+  //       if (reset) {
+  //         agentContainer.innerHTML = '';
+  //       }
 
-function closeAgentOverlay() {
-  const overlay = document.getElementById("agentOverlayContainer");
-  overlay.style.display = "none";
-  document.getElementById("agentIframe").src = "";
-}
+  //       if (data.agents && data.agents.length > 0) {
+  //         data.agents.forEach(agent => {
+  //           agentContainer.appendChild(createAgentCard(agent));
+  //         });
+  //         currentPage++;
+  //       } else if (reset) {
+  //         agentContainer.innerHTML = '<div style="text-align: center; padding: 20px;">No agents found.</div>';
+  //       }
 
-// Throttled infinite scroll
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-  if (scrollTimeout) clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-      loadAgents();
-    }
-  }, 200);
-});
+  //     } catch (err) {
+  //       console.error('Error loading agents:', err);
+  //       if (reset) {
+  //         agentContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Failed to load agents.</div>';
+  //       }
+  //     } finally {
+  //       loading = false;
+  //     }
+  //   }
 
-// Initial Load
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadAgents(true);
-  if (document.body.offsetHeight <= window.innerHeight) {
-    loadAgents();
-  }
-});
+  //   function closeAgentOverlay() {
+  //     const overlay = document.getElementById("agentOverlayContainer");
+  //     overlay.style.display = "none";
+  //     document.getElementById("agentIframe").src = "";
+  //   }
 
+  //   // Infinite scroll
+  //   let scrollTimeout;
+  //   window.addEventListener('scroll', () => {
+  //     if (scrollTimeout) clearTimeout(scrollTimeout);
+  //     scrollTimeout = setTimeout(() => {
+  //       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+  //         loadAgents();
+  //       }
+  //     }, 200);
+  //   });
+
+  //   // Initial Load
+  //   document.addEventListener('DOMContentLoaded', async () => {
+  //     await loadAgents(true);
+  //     if (document.body.offsetHeight <= window.innerHeight) {
+  //       loadAgents();
+  //     }
+  //   });
   </script>
 </body>
 </html>

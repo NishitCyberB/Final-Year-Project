@@ -142,84 +142,84 @@
   <script src="assets/js/main.js"></script>
 
   <script>
-    const gallery = document.getElementById('hotelGallery');
-    const form = document.querySelector('.hotel-search-form');
-    const template = document.getElementById('hotelCardTemplate');
-    let currentPage = 1;
-    const limit = 6;
-    let loading = false;
-    let totalPages = 1;
-    let filters = {};
+    // const gallery = document.getElementById('hotelGallery');
+    // const form = document.querySelector('.hotel-search-form');
+    // const template = document.getElementById('hotelCardTemplate');
+    // let currentPage = 1;
+    // const limit = 6;
+    // let loading = false;
+    // let totalPages = 1;
+    // let filters = {};
 
-    function createHotelCard(hotel) {
-      const clone = template.content.cloneNode(true);
-      const imageUrl = hotel.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image';
-      const rating = hotel.rating ? '★'.repeat(hotel.rating) : '★★★';
-      const price = hotel.price ? `₹${hotel.price}` : '₹--';
-      const location = hotel.location?.district || hotel.location || 'Gujarat';
+    // function createHotelCard(hotel) {
+    //   const clone = template.content.cloneNode(true);
+    //   const imageUrl = hotel.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image';
+    //   const rating = hotel.rating ? '★'.repeat(hotel.rating) : '★★★';
+    //   const price = hotel.price ? `₹${hotel.price}` : '₹--';
+    //   const location = hotel.location?.district || hotel.location || 'Gujarat';
 
-      clone.querySelector('.hotel-img').src = imageUrl;
-      clone.querySelector('.hotel-img').alt = hotel.name;
-      clone.querySelector('.hotel-card-title').textContent = hotel.name;
-      clone.querySelector('.hotel-card-desc').innerHTML = `Rating: ${rating}<br>Location: ${location}<br>Price: ${price} / night`;
-      clone.querySelector('.hotel-card-btn').addEventListener('click', () => {
-        window.location.href = `hoteldetail.html?id=${hotel._id}`;
-      });
+    //   clone.querySelector('.hotel-img').src = imageUrl;
+    //   clone.querySelector('.hotel-img').alt = hotel.name;
+    //   clone.querySelector('.hotel-card-title').textContent = hotel.name;
+    //   clone.querySelector('.hotel-card-desc').innerHTML = `Rating: ${rating}<br>Location: ${location}<br>Price: ${price} / night`;
+    //   clone.querySelector('.hotel-card-btn').addEventListener('click', () => {
+    //     window.location.href = `hoteldetail.html?id=${hotel._id}`;
+    //   });
 
-      gallery.appendChild(clone);
-    }
+    //   gallery.appendChild(clone);
+    // }
 
-    async function loadHotels(reset = false) {
-      if (loading || (currentPage > totalPages && !reset)) return;
-      loading = true;
+    // async function loadHotels(reset = false) {
+    //   if (loading || (currentPage > totalPages && !reset)) return;
+    //   loading = true;
 
-      if (reset) {
-        gallery.innerHTML = '<div style="text-align:center;padding:20px;">Loading hotels...</div>';
-        currentPage = 1;
-      }
+    //   if (reset) {
+    //     gallery.innerHTML = '<div style="text-align:center;padding:20px;">Loading hotels...</div>';
+    //     currentPage = 1;
+    //   }
 
-      const query = new URLSearchParams({ ...filters, page: currentPage, limit });
-      try {
-        const res = await fetch(`http://localhost:5000/api/hotels/search?${query.toString()}`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
+    //   const query = new URLSearchParams({ ...filters, page: currentPage, limit });
+    //   try {
+    //     const res = await fetch(`http://localhost:5000/api/hotels/search?${query.toString()}`);
+    //     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    //     const data = await res.json();
 
-        totalPages = data.totalPages;
-        if (reset) gallery.innerHTML = '';
-        if (!data.hotels.length && reset) {
-          gallery.innerHTML = '<div style="text-align:center;padding:20px;">No hotels found.</div>';
-          return;
-        }
+    //     totalPages = data.totalPages;
+    //     if (reset) gallery.innerHTML = '';
+    //     if (!data.hotels.length && reset) {
+    //       gallery.innerHTML = '<div style="text-align:center;padding:20px;">No hotels found.</div>';
+    //       return;
+    //     }
 
-        data.hotels.forEach(createHotelCard);
-        currentPage++;
-      } catch (err) {
-        console.error('Failed to load hotels:', err);
-        if (reset) {
-          gallery.innerHTML = '<div style="text-align:center;padding:20px;color:red;">Failed to load hotels. Please try again.</div>';
-        }
-      } finally {
-        loading = false;
-      }
-    }
+    //     data.hotels.forEach(createHotelCard);
+    //     currentPage++;
+    //   } catch (err) {
+    //     console.error('Failed to load hotels:', err);
+    //     if (reset) {
+    //       gallery.innerHTML = '<div style="text-align:center;padding:20px;color:red;">Failed to load hotels. Please try again.</div>';
+    //     }
+    //   } finally {
+    //     loading = false;
+    //   }
+    // }
 
-    window.addEventListener('scroll', () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-        loadHotels();
-      }
-    });
+    // window.addEventListener('scroll', () => {
+    //   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+    //     loadHotels();
+    //   }
+    // });
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      filters = {};
-      for (let [key, val] of formData.entries()) {
-        if (val.trim()) filters[key] = val.trim();
-      }
-      loadHotels(true);
-    });
+    // form.addEventListener('submit', e => {
+    //   e.preventDefault();
+    //   const formData = new FormData(form);
+    //   filters = {};
+    //   for (let [key, val] of formData.entries()) {
+    //     if (val.trim()) filters[key] = val.trim();
+    //   }
+    //   loadHotels(true);
+    // });
 
-    loadHotels();
+    // loadHotels();
   </script>
 </body>
 </html>

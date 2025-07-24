@@ -11,7 +11,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Raleway&family=Nunito&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -25,83 +25,116 @@
 </head>
 
 <body class="services-page">
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-title accent-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <nav class="breadcrumbs">
+        </nav>
+      </div>
+    </div>
+  </main>
 
 
-<!-- Search Bar -->
+  <!-- Search Bar -->
   <section class="tour-search-section">
     <div class="tour-search-container">
-    <h2 class="tour-search-title">Find Your Perfect Destination</h2>
+      <h2 class="tour-search-title">Find Your Perfect Destination</h2>
+      <form class="tour-search-form">
+        <select class="tour-select" name="destinationType">
+          <option value="">Destination Type</option>
+          <option value="science">Science</option>
+          <option value="urban">Urban</option>
+          <option value="wildlife">Wildlife</option>
+          <option value="heritage">Heritage</option>
+          <option value="beach">Beach</option>
+          <option value="historical">Historical</option>
+          <option value="religious">Religious</option>
+          <option value="architectural">Architectural</option>
+          <option value="hill_station">Hill Station</option>
+          <option value="educational">Educational</option>
+          <option value="crafts">Crafts</option>
+          <option value="adventure">Adventure</option>
+          <option value="festival">Festival</option>
+          <option value="special attraction">Special Attraction</option>
+        </select>
 
-    <!-- ONE-ROW form -->
-    <form class="tour-search-form">
-      <select class="tour-select" name="destinationType">
-        <option value="">Destination Type</option>
-        <option value="beach">Beach</option>
-        <option value="mountain">Mountain</option>
-        <option value="historical">Historical</option>
-        <option value="adventure">Adventure</option>
-      </select>
+        <select class="tour-select" name="location">
+          <option value="">District</option>
+          <option value="ahmedabad">Ahmedabad</option>
+          <option value="surat">Surat</option>
+          <option value="vadodara">Vadodara</option>
+          <option value="rajkot">Rajkot</option>
+          <option value="bhavnagar">Bhavnagar</option>
+          <option value="jamnagar">Jamnagar</option>
+          <option value="gandhinagar">Gandhinagar</option>
+          <option value="junagadh">Junagadh</option>
+          <option value="anand">Anand</option>
+          <option value="bharuch">Bharuch</option>
+        </select>
 
-      <select class="tour-select" name="location">
-        <option value="">District</option>
-        <option value="ahmedabad">Ahmedabad</option>
-        <option value="surat">Surat</option>
-        <option value="vadodara">Vadodara</option>
-        <option value="rajkot">Rajkot</option>
-        <option value="bhavnagar">Bhavnagar</option>
-        <option value="jamnagar">Jamnagar</option>
-        <option value="gandhinagar">Gandhinagar</option>
-        <option value="junagadh">Junagadh</option>
-        <option value="anand">Anand</option>
-        <option value="bharuch">Bharuch</option>
-      </select>
+        <select class="tour-select" name="ageGroup">
+          <option value="">Age Group</option>
+          <option value="kids">Kids (0-12)</option>
+          <option value="teens">Teens (13-17)</option>
+          <option value="adults">Adults (18-59)</option>
+          <option value="seniors">Seniors (60+)</option>
+        </select>
 
-      <select class="tour-select" name="ageGroup">
-        <option value="">Age Group</option>
-        <option value="kids">Kids (0-12)</option>
-        <option value="teens">Teens (13-17)</option>
-        <option value="adults">Adults (18-59)</option>
-        <option value="seniors">Seniors (60+)</option>
-      </select>
+        <select class="tour-select" name="season">
+          <option value="">Season</option>
+          <option value="summer">Summer</option>
+          <option value="winter">Winter</option>
+          <option value="monsoon">Monsoon</option>
+          <option value="spring">Spring</option>
+        </select>
 
-      <select class="tour-select" name="season">
-        <option value="">Season</option>
-        <option value="summer">Summer</option>
-        <option value="winter">Winter</option>
-        <option value="monsoon">Monsoon</option>
-        <option value="spring">Spring</option>
-      </select>
+        <button type="submit" class="tour-search-button">Search</button>
+      </form>
+    </div>
+  </section>
 
-      <button type="submit" class="tour-search-button">Search</button>
-    </form>
-  </div>
-</section>
+  <!-- Places Section -->
+  <div id="body" class="gallery"></div>
 
-<!-- End Search Bar -->
+  <!-- Template for place card -->
+  <template id="place-card-template">
+    <div class="place_card">
+      <figure class="card">
+        <img src="" class="card-image" alt="" />
+        <figcaption class="caption">
+          <h2 class="card-title"></h2>
+          <p class="card-description"></p>
+          <button class="view-more-btn">View More</button>
+        </figcaption>
+      </figure>
+      <div class="place_name"></div>
+    </div>
+  </template>
 
-<!-- Places section -->
-  
-  <div id ="body"class="gallery">
-
-  </div>
-  
-
+  <!-- Overlay -->
   <div id="overlayContainer" style="display: none; position: fixed; top: 0; left: 0; 
-  width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); 
-  z-index: 9999; justify-content: center; align-items: center;">
-  <div style="position: relative; width: 90%; height: 90%; max-width: 1200px;">
-    <button onclick="closeOverlay()" style="position: absolute; top: 10px; right: 10px; 
-      color: rgba(34, 139, 34, 0.85); border: none; padding: 8px 12px; cursor: pointer; z-index: 10000;">Back</button>
-    <iframe id="placeIframe" style="width: 100%; height: 100%; border: none; border-radius: 8px; background: #fff;"></iframe>
+    width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); 
+    z-index: 9999; justify-content: center; align-items: center;">
+    <div style="position: relative; width: 90%; height: 90%; max-width: 1200px;">
+      <button onclick="closeOverlay()" style="position: absolute; top: 10px; right: 10px; 
+        color: rgba(34, 139, 34, 0.85); border: none; padding: 8px 12px; cursor: pointer; z-index: 10000;">Back</button>
+      <iframe id="placeIframe" style="width: 100%; height: 100%; border: none; border-radius: 8px; background: #fff;"></iframe>
+    </div>
   </div>
-</div>
 
-
+  <!-- Footer -->
 
   <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <!-- Preloader -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
   <div id="preloader"></div>
+
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
@@ -111,137 +144,114 @@
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
-<!-- place.html JavaScript -->
+  <!-- Places Script -->
+  <script>
+    let currentPage = 1;
+    const limit = 8;
+    let loading = false;
+    let totalPages = 1;
+    let filters = {};
 
-<script>
-let currentPage = 1;
-const limit = 8;
-let loading = false;
-let totalPages = 1;
-let filters = {};
+    const gallery = document.getElementById('body');
+    const form = document.querySelector('.tour-search-form');
 
-const gallery = document.getElementById('body');
-const form = document.querySelector('.tour-search-form');
+    function createPlaceCard(place) {
+      const template = document.getElementById('place-card-template');
+      const clone = template.content.cloneNode(true);
 
-if (!gallery) console.error("Error: #body element not found in DOM.");
-if (!form) console.error("Error: .tour-search-form not found in DOM.");
+      const img = clone.querySelector('.card-image');
+      const title = clone.querySelector('.card-title');
+      const description = clone.querySelector('.card-description');
+      const button = clone.querySelector('.view-more-btn');
+      const nameDiv = clone.querySelector('.place_name');
 
-function createPlaceCard(place) {
-  const imageUrl = place.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image';
+      img.src = place.imageUrl || 'https://via.placeholder.com/400x250?text=No+Image';
+      img.alt = place.name;
+      img.onerror = () => {
+        img.src = 'https://via.placeholder.com/400x250?text=Image+Error';
+      };
 
-  return `
-    <div class="place_card">
-      <figure class="card">
-        <!-- Top-right fake select box -->
-        <div class="fake-select-box"><span>Select</span></div>
+      title.textContent = place.name;
+      description.textContent = place.intro || 'Explore Gujarat';
+      nameDiv.textContent = place.name;
+      button.onclick = () => openOverlay(place.name);
 
-        <!-- Image -->
-        <img src="${imageUrl}" 
-             class="card-image" 
-             alt="${place.name}"
-             onerror="this.src='https://via.placeholder.com/400x250?text=Image+Error'"
-             onload="console.log('Image loaded for: ${place.name}')"
-        />
-
-        <!-- Content -->
-        <figcaption class="caption">
-          <h2 class="card-title">${place.name}</h2>
-          <p class="card-description">${place.intro || 'Explore Gujarat'}</p>
-          <button class="view-more-btn" onclick="openOverlay('${place.name}')">View More</button>
-        </figcaption>
-      </figure>
-      <div class="place_name">${place.name}</div>
-    </div>
-  `;
-}
-
-async function loadPlaces(reset = false) {
-  if (loading || (currentPage > totalPages && !reset)) return;
-  loading = true;
-
-  if (reset) {
-    gallery.innerHTML = '<div style="text-align: center; padding: 20px;">Loading places...</div>';
-    currentPage = 1;
-  }
-
-  const query = new URLSearchParams({ ...filters, page: currentPage, limit });
-
-  try {
-    const res = await fetch(`http://localhost:5000/api/places/search?${query.toString()}`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-    const data = await res.json();
-    if (!data.places || !Array.isArray(data.places)) {
-      gallery.innerHTML = '<div style="color: red; text-align: center;">Invalid data received from server.</div>';
-      return;
+      return clone;
     }
 
-    totalPages = data.totalPages || 1;
+    async function loadPlaces(reset = false) {
+      if (loading || (currentPage > totalPages && !reset)) return;
+      loading = true;
 
-    if (reset) gallery.innerHTML = '';
+      if (reset) {
+        gallery.innerHTML = '<div style="text-align: center; padding: 20px;">Loading places...</div>';
+        currentPage = 1;
+      }
 
-    if (data.places.length > 0) {
-      data.places.forEach(place => {
-        gallery.insertAdjacentHTML('beforeend', createPlaceCard(place));
-      });
-      currentPage++;
-    } else if (reset) {
-      gallery.innerHTML = '<div style="text-align: center; padding: 20px;">No places found matching your criteria.</div>';
+      const query = new URLSearchParams({ ...filters, page: currentPage, limit });
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/places/search?${query}`);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+        const data = await res.json();
+        totalPages = data.totalPages;
+
+        if (reset) gallery.innerHTML = '';
+
+        if (data.places?.length) {
+          data.places.forEach(place => {
+            const card = createPlaceCard(place);
+            gallery.appendChild(card);
+          });
+          currentPage++;
+        } else if (reset) {
+          gallery.innerHTML = '<div style="text-align: center; padding: 20px;">No places found.</div>';
+        }
+      } catch (err) {
+        if (reset) {
+          gallery.innerHTML = '<div style="text-align: center; color: red; padding: 20px;">Failed to load places.</div>';
+        }
+        console.error(err);
+      } finally {
+        loading = false;
+      }
     }
 
-  } catch (err) {
-    console.error('Failed to load places:', err);
-    if (reset) {
-      gallery.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">Failed to load places. Please check your connection and try again.</div>';
-    }
-  } finally {
-    loading = false;
-  }
-}
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      filters = {};
+      for (let [key, value] of formData.entries()) {
+        if (value.trim()) filters[key] = value.trim();
+      }
+      loadPlaces(true);
+    });
 
-// Scroll loading
-window.addEventListener('scroll', () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+        loadPlaces();
+      }
+    });
+
+    function openOverlay(placeName) {
+      const iframe = document.getElementById("placeIframe");
+      const overlay = document.getElementById("overlayContainer");
+      iframe.src = `single-page.html?place=${encodeURIComponent(placeName)}`;
+      overlay.style.display = "flex";
+    }
+
+    function closeOverlay() {
+      const overlay = document.getElementById("overlayContainer");
+      const iframe = document.getElementById("placeIframe");
+      overlay.style.display = "none";
+      iframe.src = "";
+    }
+
     loadPlaces();
-  }
-});
+  </script>
 
-// Filter form submission
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const formData = new FormData(form);
-  filters = {};
-  for (let [key, value] of formData.entries()) {
-    if (value.trim() !== '') filters[key] = value.trim();
-  }
-  loadPlaces(true); // reset
-});
-
-// Overlay open and close
-function openOverlay(placeName) {
-  const iframe = document.getElementById("placeIframe");
-  const overlay = document.getElementById("overlayContainer");
-
-  iframe.src = `single-page.html?place=${encodeURIComponent(placeName)}`;
-  overlay.style.display = "flex";
-}
-
-function closeOverlay() {
-  const iframe = document.getElementById("placeIframe");
-  const overlay = document.getElementById("overlayContainer");
-
-  overlay.style.display = "none";
-  iframe.src = "";
-}
-
-// Initial load
-loadPlaces();
-</script>
-
-  
 </body>
-
 </html>
